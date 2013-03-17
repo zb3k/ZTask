@@ -30,35 +30,46 @@ def init(conf):
 
 ############################################################################
 
+def driver_not_exists(msg):
+	None
+
+############################################################################
+
+def growl_notify(msg):
+	import gntp.notifier
+
+	growl = gntp.notifier.GrowlNotifier(
+		applicationName      = "ZTask",
+		notifications        = ["New Updates", "New Messages"],
+		defaultNotifications = ["New Messages"],
+	)
+	growl.register()
+
+	icon = open(config['icon'], 'rb').read()
+
+	growl.notify(
+		noteType    = "New Messages",
+		title       = config['title'],
+		description = msg,
+		icon        = icon,
+		sticky      = config['sticky'],
+		priority    = 1,
+	)
+
+############################################################################
+
+def osx_notify(msg):
+	from pync import Notifier
+	Notifier.notify('Hello World', title=config['title'])
+
+############################################################################
+
 def send(msg):
-	if config['enabled'] != True:
-		return
+	if config['enabled']:
+		{
+			'growl': growl_notify,
+			'osx':   osx_notify,
+		}.get(config['driver'], driver_not_exists)(msg)
 
-	# Growl Notification (Mac OS)
-	if config['driver'] == 'Growl':
-		import gntp.notifier
-
-		growl = gntp.notifier.GrowlNotifier(
-			applicationName      = "ZTask",
-			notifications        = ["New Updates", "New Messages"],
-			defaultNotifications = ["New Messages"],
-		)
-		growl.register()
-
-		icon = open(config['icon'], 'rb').read()
-
-		growl.notify(
-			noteType    = "New Messages",
-			title       = config['title'],
-			description = msg,
-			icon        = icon,
-			sticky      = config['sticky'],
-			priority    = 1,
-		)
-
-	# Mac OS Notification Center
-	if config['driver'] == 'OSX':
-		from pync import Notifier
-		Notifier.notify('Hello World', title=config['title'])
 
 ############################################################################

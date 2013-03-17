@@ -2,14 +2,22 @@
 
 Синхронизация задач между несколькими сервисами/программами
 
-## Поддерживаемы сервисы/программы
+## Сервисы/программы управления задачами
 
-* [The Hit List](http://www.potionfactory.com/thehitlist/) (Mac OS X)
-* [Megaplan](http://megaplan.ru/) (Web)
-* ? CSV/XML/HTML - Parser (Web)
+| # | Сервис     | ОС     | Описание                                                 |
+| - | ---------- | ------ | -------------------------------------------------------- |
+| ~ | thehitlist | Mac OS | [The Hit List](http://www.potionfactory.com/thehitlist/) |
+| ~ | megaplan   | Web    | [Megaplan](http://megaplan.ru/)                          |
+|   | gtasks     | Web    | Google Tasks                                             |
+|   | github     | Web    | [Github](http://github.com)                              |
+|   | bitbucket  | Web    | [Bitbucket](http://bitbucket.com)                        |
 
-В планах
 
-* [Github](http://github.com) (Web)
-* [Bitbucket](http://bitbucket.com) (Web)
-* Google Tasks (Web)
+## Сервисы оповещения
+
+| # | Сервис   | ОС     | Модуль   | Описание                        |
+| - | -------- | ------ | -------- | ------------------------------- |
+| + | growl    | Mac OS | gntp     | Growl Notification              |
+| + | osx      | Mac OS | pync     | Mac OS 10.8 Notification Center |
+|   | gobject  | Linux  | gobject  |                                 |
+|   | pynotify | Linux  | pynotify |                                 |
