@@ -3,13 +3,14 @@
 
 ############################################################################
 
-import optparse
+# import optparse
 import sys
 import os
 
 import notifications as notify
 import services
 from config import Config
+import db
 
 ############################################################################
 
@@ -40,9 +41,11 @@ class zTask():
 
 		c.validate_config(self.config)
 
+		self.targets = c.get_targets_list(self.config)
+
 		notify.init(self.config)
 
-		self.targets = c.get_targets_list(self.config)
+		self.db = db.Database()
 
 	############################################################################
 
@@ -64,8 +67,9 @@ class zTask():
 if __name__ == '__main__':
 	ztask = zTask()
 
-	ztask.synch()
+	# ztask.synch()
 	# ztask.display_tasks()
 	# ztask.display_projects()
+	#
 
 ############################################################################
