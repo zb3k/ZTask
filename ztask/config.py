@@ -22,7 +22,6 @@ class Config():
 		self.config_file = config_file
 
 	def validate_config(self, config):
-
 		# [general]
 		if not config.has_section('general'):
 			die("No [general] section found.")
@@ -31,19 +30,19 @@ class Config():
 		if not config.has_option('general', 'targets'):
 			die("No targets= item in [general] found.")
 
-		targets = config.get('general', 'targets')
-		targets = [t.strip() for t in targets.split(',')]
-
-		for target in targets:
+		for target in self.get_targets_list(config):
 			if target not in config.sections():
 				die("No [%s] section found." % target)
+
+	def get_targets_list(self, config):
+		targets = config.get('general', 'targets')
+		targets = [t.strip() for t in targets.split(',')]
+		return targets
 
 	def load_config(self):
 		path   = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 		config = ConfigParser.ConfigParser()
 
 		config.read(path + '/' + self.config_file)
-
-		self.validate_config(config)
 
 		return config

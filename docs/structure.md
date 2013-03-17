@@ -55,7 +55,7 @@
 * `done`      условно завершена
 * `completed` завершена
 * `delayed`   поставлена на паузу
-* `cancelled` отменена
+* `canceled`  отменена
 * `expired`   провалена
 
 
