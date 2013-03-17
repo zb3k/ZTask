@@ -24,7 +24,7 @@ class zTask():
 
 		notifications.init(self.config)
 
-		notifications.send('hello')
+		# notifications.send('hello')
 
 		# print self.config
 
