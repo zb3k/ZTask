@@ -7,7 +7,7 @@ import optparse
 import sys
 import os
 
-
+import notifications
 from config import Config
 
 ############################################################################
@@ -22,7 +22,11 @@ class zTask():
 		c = Config('settings.ini')
 		self.config = c.load_config()
 
-		print self.config
+		notifications.init(self.config)
+
+		notifications.send('hello')
+
+		# print self.config
 
 
 ############################################################################

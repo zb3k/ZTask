@@ -46,4 +46,4 @@ class Config():
 
 		self.validate_config(config)
 
-		print config.items('netcat_trac')
+		return config
