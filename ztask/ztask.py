@@ -38,7 +38,7 @@ class zTask():
 	def __init__(self):
 
 		# Get config items
-		c = Config('settings.ini')
+		c = Config('config.ini')
 		self.config = c.load_config()
 
 		c.validate_config(self.config)
@@ -79,6 +79,8 @@ class zTask():
 
 	def date_now(self):
 		return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+	############################################################################
 
 	def date(self, value):
 		return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
