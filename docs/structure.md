@@ -26,7 +26,9 @@
 | -------------- | --------- | ------------------------------------ |
 | id             | int       | Идентификатор задачи                 |
 | parent_task_id | int       | Идентификатор надзадачи              |
+| source_target  | varchar   | Источник задачи                      |
 | project_id     | int       | Идентификатор проекта                |
+| project        | varchar   | Имя проекта                          |
 | status         | varchar   | Статус задачи                        |
 | name           | text      | Название задачи                      |
 | description    | text      | Подробное описание задачи            |
@@ -39,6 +41,11 @@
 | date_finished  | datetime  | Дата фактического завершения         |
 | date_added     | datetime  | Дата добавления                      |
 | date_modified  | datetime  | Дата последнего изменения            |
+| actual_time    | int       | Время выполнения работы (сек)        |
+| estimated_time | int       | Предполагаемое время работ (сек)     |
+
+
+
 
 ** Приоритеты **
 
