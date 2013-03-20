@@ -21,3 +21,12 @@
 | + | osx      | Mac OS | pync     | Mac OS 10.8 Notification Center |
 |   | gobject  | Linux  | gobject  |                                 |
 |   | pynotify | Linux  | pynotify |                                 |
+
+## Комманды
+
+	$ python ztask.py <COMMAND>
+
+* `pull` - забрать задачи из всех "источников"
+* `push` - добавить/обновить задачи получателя
+* `synch` - pull & push
+* `reset` - удаляет загруженные задачи из базы ztask

@@ -66,7 +66,7 @@ class zTask():
 		row = self.db.where('key', '=', key).get('settings').fetchone();
 		if row is None:
 			self.db.insert('settings', dict(
-				key   = 'last_pull',
+				key   = key,
 				value = value
 			));
 		else:
@@ -87,9 +87,18 @@ class zTask():
 
 	############################################################################
 
+	def last_synch(self, val = None):
+		if val is None:
+			return self.get_settings('last_synch', '2012-01-01 00:00:00', self.date)
+		else:
+			self.set_settings('last_synch', val)
+			return val
+
+	############################################################################
+
 	def pull(self):
 		# get last pull
-		last_pull = self.get_settings('last_pull', '2012-01-01 00:00:00', self.date)
+		last_synch = self.last_synch()
 
 		for target in self.targets:
 
@@ -116,7 +125,7 @@ class zTask():
 			for t in tasks:
 				task_key = service.get_id(t)
 				if task_key in exist:
-					if service.get_date_modified(t) > last_pull:
+					if service.get_date_modified(t) > last_synch:
 						t['id'] = exist[task_key]
 						update_tasks.append(t)
 				else:
@@ -149,8 +158,7 @@ class zTask():
 
 			self.db.commit();
 
-		self.set_settings('last_pull', self.date_now())
-
+		self.last_synch(self.date_now())
 
 
 ############################################################################
@@ -160,10 +168,13 @@ class zTask():
 if __name__ == '__main__':
 	ztask = zTask()
 	print '[START]'
+
 	ztask.pull()
+
 	# ztask.display_tasks()
 	# ztask.display_projects()
-	#
+
+
 	print '[END]'
 
 ############################################################################

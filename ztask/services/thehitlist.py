@@ -13,10 +13,10 @@ from ztask import status
 ############################################################################
 
 class TheHitList(TaskService):
+
 	def __init__(self, *args, **kw):
 		super(TheHitList, self).__init__(*args, **kw)
-
-		self.app = app(self.appname)
+		self.app = app(self.config['appname'])
 
 	############################################################################
 
@@ -24,31 +24,29 @@ class TheHitList(TaskService):
 	def validate_config(self, config, target):
 		TaskService.validate_config(config, target)
 
-		self.appname = 'The Hit List'
+		self.config['appname'] = 'The Hit List'
 		if config.has_option(target, 'appname'):
-			self.appname = config.get(target, 'appname')
+			self.config['appname'] = config.get(target, 'appname')
 
-		self.lists = False
-		if config.has_option(target, 'lists'):
-			lists = config.get(target, 'lists')
-			if lists:
-				self.lists = [l.strip().decode('utf-8') for l in lists.split(',')]
+		self.config['projects'] = False
+		if config.has_option(target, 'projects'):
+			projects = config.get(target, 'projects')
+			if projects:
+				self.config['projects'] = [l.strip().decode('utf-8') for l in projects.split(',')]
 
 	############################################################################
 
 	def projects(self):
 		result = []
-		try:
-			for f in self.app.folders_group.folders.get():
+		for f in self.app.folders_group.folders.get():
+			try:
 				for lst in f.lists.get():
 					result.append({
 						'id':   lst.id.get(),
 						'name': lst.name.get(),
 						'_obj': lst
 					})
-		except:
-			None
-
+			except: None
 		return result
 
 	############################################################################
@@ -57,12 +55,12 @@ class TheHitList(TaskService):
 
 		# Projects
 		all_projects = self.projects()
-		if self.lists is False or self.lists is True:
+		if self.config['projects'] is False or self.config['projects'] is True:
 			projects = all_projects
 		else:
 			projects = []
 			for pr in all_projects:
-				if pr['name'] in self.lists:
+				if pr['name'] in self.config['projects']:
 					projects.append(pr)
 
 		# Tasks
@@ -76,8 +74,8 @@ class TheHitList(TaskService):
 			for t in project_tasks:
 				tasks.append({
 					'id':      self.get_id({'_obj':t}),
-					'_obj':    t,
 					'project': pr['name'],
+					'_obj':    t,
 				})
 		return tasks
 
@@ -162,7 +160,7 @@ class TheHitList(TaskService):
 		d = getattr(t['_obj'], key).get()
 		if d == k.missing_value:
 			return None
-		else: d = d
+		else:d = d
 		return d
 
 	def get_date_start(self, t):
