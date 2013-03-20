@@ -4,3 +4,4 @@
  ☐ Megaplan - поддержка pull
  ☐ Services - кастомный заголовок задачи. format.name = [{priority}] #{id} | {name} [{estimated_time}] ({actual_time})
  ☐ Задокументировать зависимости от установленных модулей
+ ☐ Сделать сервис: lxml+xpath
