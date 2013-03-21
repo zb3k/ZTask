@@ -6,11 +6,14 @@ import ConfigParser
 import sys
 import os
 import inspect
+import twiggy
+from twiggy import log
+from twiggy import levels
 
 ############################################################################
 
 def die(msg):
-	print 'SETTINGS ERROR:', msg
+	log.options(suppress_newlines=False).critical(msg)
 	sys.exit(1)
 
 ############################################################################
@@ -22,6 +25,10 @@ class Config():
 		self.config_file = config_file
 
 	def validate_config(self, config):
+
+		# Logging
+		twiggy.quickSetup(levels.INFO)
+
 		# [general]
 		if not config.has_section('general'):
 			die("No [general] section found.")
@@ -33,6 +40,9 @@ class Config():
 		for target in self.get_targets_list(config):
 			if target not in config.sections():
 				die("No [%s] section found." % target)
+			if not config.has_option(target, 'service'):
+				die("No 'service=...' option in [%s] section" % (target))
+
 
 	def get_targets_list(self, config):
 		targets = config.get('general', 'targets')

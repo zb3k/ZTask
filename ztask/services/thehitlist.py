@@ -6,6 +6,9 @@ from appscript import *
 import sys
 import os
 import time
+from datetime import datetime
+from dateutil.tz import tzlocal
+from dateutil import parser
 
 from services import TaskService
 from ztask import status
@@ -28,12 +31,6 @@ class TheHitList(TaskService):
 		if config.has_option(target, 'appname'):
 			self.config['appname'] = config.get(target, 'appname')
 
-		self.config['projects'] = False
-		if config.has_option(target, 'projects'):
-			projects = config.get(target, 'projects')
-			if projects:
-				self.config['projects'] = [l.strip().decode('utf-8') for l in projects.split(',')]
-
 	############################################################################
 
 	def projects(self):
@@ -54,14 +51,7 @@ class TheHitList(TaskService):
 	def tasks(self):
 
 		# Projects
-		all_projects = self.projects()
-		if self.config['projects'] is False or self.config['projects'] is True:
-			projects = all_projects
-		else:
-			projects = []
-			for pr in all_projects:
-				if pr['name'] in self.config['projects']:
-					projects.append(pr)
+		projects = self.filter_projects( self.projects() )
 
 		# Tasks
 		tasks = []
@@ -78,26 +68,6 @@ class TheHitList(TaskService):
 					'_obj':    t,
 				})
 		return tasks
-
-	############################################################################
-
-	def task(self, t):
-		return {
-			'id':             self.get_id(t),
-			# 'project_id':     self.get_date_modified(t),
-			'project':        self.get_project(t),
-			'date_modified':  self.get_date_modified(t),
-			'name':           self.get_name(t),
-			'description':    self.get_description(t),
-			'priority':       self.get_priority(t),
-			'status':         self.get_status(t),
-			'date_start':     self.get_date_start(t),
-			'date_deadline':  self.get_date_deadline(t),
-			'date_finished':  self.get_date_finished(t),
-			'date_added':     self.get_date_added(t),
-			'actual_time':    self.get_actual_time(t),
-			'estimated_time': self.get_estimated_time(t),
-		};
 
 	############################################################################
 
@@ -152,7 +122,7 @@ class TheHitList(TaskService):
 			1:'H', 2:'H', 3:'H',
 			4:'M', 5:'M', 6:'M',
 			7:'L', 8:'L', 9:'L',
-		}.get(t['_obj'].priority.get(), self.default_priority)
+		}.get(t['_obj'].priority.get(), self.config['default_priority'])
 
 	############################################################################
 
@@ -160,8 +130,11 @@ class TheHitList(TaskService):
 		d = getattr(t['_obj'], key).get()
 		if d == k.missing_value:
 			return None
-		else:d = d
-		return d
+		else:
+			d = d
+
+		toffset = datetime.now(tzlocal()).strftime('%z')
+		return parser.parse(d.strftime('%Y-%m-%d %H:%M:%S'+toffset))
 
 	def get_date_start(self, t):
 		if 'start_date' in t: return t['start_date']

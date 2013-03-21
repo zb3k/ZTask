@@ -4,14 +4,19 @@
 ############################################################################
 
 # import optparse
+import time
 import sys
 import os
+from twiggy import log
 from datetime import datetime
-import time
+from dateutil import parser
+from dateutil.tz import tzlocal
+
 
 import notifications as notify
 import services
 from config import Config
+from config import die
 import db
 
 ############################################################################
@@ -36,7 +41,6 @@ class zTask():
 	targets = []
 
 	def __init__(self):
-
 		# Get config items
 		c = Config('config.ini')
 		self.config = c.load_config()
@@ -78,33 +82,36 @@ class zTask():
 	############################################################################
 
 	def date_now(self):
-		return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+		return datetime.now(tzlocal())
 
 	############################################################################
 
 	def date(self, value):
-		return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+		return parser.parse(value)
 
 	############################################################################
 
-	def last_synch(self, val = None):
+	def synch_date(self, key='',val = None):
 		if val is None:
-			return self.get_settings('last_synch', '2012-01-01 00:00:00', self.date)
+			return self.get_settings('synch_date_'+key, '2012-01-01 00:00:00+0000', self.date)
 		else:
-			self.set_settings('last_synch', val)
+			self.set_settings('synch_date_'+key, val)
 			return val
 
 	############################################################################
 
 	def pull(self):
 		# get last pull
-		last_synch = self.last_synch()
+
+		log.info(' [pull]')
 
 		for target in self.targets:
-
-			print 'Pull target:', target
+			log.info(' [{0}]', target)
 
 			service = services.service(self.config, target)
+
+			synch_date = self.synch_date(target)
+			service.set_synch_date( synch_date )
 
 			# Pull target tasks
 			tasks = service.tasks()
@@ -125,17 +132,15 @@ class zTask():
 			for t in tasks:
 				task_key = service.get_id(t)
 				if task_key in exist:
-					if service.get_date_modified(t) > last_synch:
+					# print t['name'], service.get_date_modified(t), parser.parse(synch_date)
+					if service.get_date_modified(t) > synch_date:
 						t['id'] = exist[task_key]
 						update_tasks.append(t)
 				else:
 					insert_tasks.append(t)
 
 
-
-			print '  Update:', len(update_tasks)
-			print '  Insert:', len(insert_tasks)
-
+			log.info(' INSERT:{0} | UPDATE:{1}', len(insert_tasks), len(update_tasks))
 
 			for task in update_tasks:
 				task_id = task['id']
@@ -158,7 +163,7 @@ class zTask():
 
 			self.db.commit();
 
-		self.last_synch(self.date_now())
+			self.synch_date(target, self.date_now())
 
 
 ############################################################################
@@ -166,15 +171,14 @@ class zTask():
 ############################################################################
 
 if __name__ == '__main__':
+
 	ztask = zTask()
-	print '[START]'
 
 	ztask.pull()
 
 	# ztask.display_tasks()
 	# ztask.display_projects()
 
-
-	print '[END]'
+	log.info(' [END]')
 
 ############################################################################
